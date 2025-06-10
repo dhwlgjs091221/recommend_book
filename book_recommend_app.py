@@ -14,22 +14,25 @@ if "monthly_goal" not in st.session_state:
 def search_books(query, max_results=10):
     url = "https://www.googleapis.com/books/v1/volumes"
     params = {"q": query, "maxResults": max_results}
-    response = requests.get(url, params=params)
-    if response.status_code == 200:
+    try:
+        response = requests.get(url, params=params)
+        response.raise_for_status()
         data = response.json()
+        st.write("🔍 API 결과 (디버그용):", data)  # API 원본 데이터 출력
         books = []
         for item in data.get("items", []):
-            info = item["volumeInfo"]
+            info = item.get("volumeInfo", {})
             books.append({
                 "title": info.get("title", "제목 없음"),
                 "authors": ", ".join(info.get("authors", ["정보 없음"])),
                 "publishedDate": info.get("publishedDate", "출판일 없음"),
-                "description": info.get("description", "")[:300] + "...",
+                "description": (info.get("description", "")[:300] + "...") if info.get("description") else "",
                 "thumbnail": info.get("imageLinks", {}).get("thumbnail", None),
                 "infoLink": info.get("infoLink", None),
             })
         return books
-    else:
+    except Exception as e:
+        st.error(f"API 요청 중 오류 발생: {e}")
         return []
 
 # UI: 독서 목표 설정
@@ -37,34 +40,38 @@ st.sidebar.header("독서 목표 설정")
 monthly_goal = st.sidebar.number_input("이번 달 목표 권수", min_value=1, max_value=50, value=st.session_state.monthly_goal)
 st.session_state.monthly_goal = monthly_goal
 
-# UI: 장르 입력 (키워드 검색용)
+# UI: 제목
 st.title("📚 책 추천 및 독서 기록 앱")
 
+# UI: 장르 입력 (키워드 검색용)
 genre_query = st.text_input("관심 있는 장르/주제 입력 (예: SF, 역사, 자기계발)")
 
 if genre_query:
     st.subheader(f'📖 "{genre_query}" 분야 추천 도서')
     books = search_books(genre_query)
 
-    for idx, book in enumerate(books):
-        cols = st.columns([1, 3])
-        with cols[0]:
-            if book["thumbnail"]:
-                st.image(book["thumbnail"], width=80)
-        with cols[1]:
-            st.markdown(f"**[{book['title']}]({book['infoLink']})**")
-            st.markdown(f"*저자: {book['authors']}*")
-            st.markdown(f"*출판일: {book['publishedDate']}*")
-            st.write(book["description"])
-            if st.button(f"읽은 책으로 등록하기 - {idx}", key=f"log_{idx}"):
-                st.session_state.reading_log.append({
-                    "title": book["title"],
-                    "authors": book["authors"],
-                    "date": datetime.today().strftime("%Y-%m-%d"),
-                    "rating": None,
-                    "review": "",
-                })
-                st.success(f"'{book['title']}' 가 독서 기록에 추가되었어요!")
+    if not books:
+        st.info("🔍 검색 결과가 없습니다. 다른 키워드로 시도해보세요.")
+    else:
+        for idx, book in enumerate(books):
+            cols = st.columns([1, 3])
+            with cols[0]:
+                if book["thumbnail"]:
+                    st.image(book["thumbnail"], width=80)
+            with cols[1]:
+                st.markdown(f"**[{book['title']}]({book['infoLink']})**")
+                st.markdown(f"*저자: {book['authors']}*")
+                st.markdown(f"*출판일: {book['publishedDate']}*")
+                st.write(book["description"])
+                if st.button(f"읽은 책으로 등록하기 - {idx}", key=f"log_{idx}"):
+                    st.session_state.reading_log.append({
+                        "title": book["title"],
+                        "authors": book["authors"],
+                        "date": datetime.today().strftime("%Y-%m-%d"),
+                        "rating": None,
+                        "review": "",
+                    })
+                    st.success(f"'{book['title']}' 가 독서 기록에 추가되었어요!")
 
 st.markdown("---")
 
