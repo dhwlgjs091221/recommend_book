@@ -72,3 +72,4 @@ if st.button("도서 추천 받기"):
                     st.markdown("---")
         else:
             st.info("검색 결과가 없습니다. 주제를 다시 입력해보세요.")
+st.write(data)
