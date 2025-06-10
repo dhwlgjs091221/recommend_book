@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-API_KEY = "AIzaSyDkQPoHigCFIMANl4zhKMjvyqh_Z21qTPY"
+API_KEY = "여기에_본인의_API_키_입력"
 
 def search_books(query, max_results=10):
     url = "https://www.googleapis.com/books/v1/volumes"
@@ -11,33 +11,27 @@ def search_books(query, max_results=10):
         "key": API_KEY
     }
     try:
-        response = requests.get(url, params=params, timeout=5)
-        response.raise_for_status()  # 200번대가 아니면 예외 발생
+        response = requests.get(url, params=params)
+        response.raise_for_status()
         data = response.json()
 
-        if "error" in data:
-            st.error(f"API 오류: {data['error'].get('message', '알 수 없는 오류')}")
-            return []
-
         books = []
-        for item in data.get("items", []):
-            info = item.get("volumeInfo", {})
-            books.append({
-                "title": info.get("title", "제목 없음"),
-                "authors": ", ".join(info.get("authors", ["저자 정보 없음"])),
-                "description": info.get("description", "설명 없음"),
-                "thumbnail": info.get("imageLinks", {}).get("thumbnail"),
-                "link": info.get("infoLink", "#")
-            })
+        if "items" in data:
+            for item in data["items"]:
+                info = item.get("volumeInfo", {})
+                title = info.get("title", "제목 없음")
+                authors = ", ".join(info.get("authors", ["저자 정보 없음"]))
+                description = info.get("description", "설명 없음")
+                thumbnail = info.get("imageLinks", {}).get("thumbnail")
+                link = info.get("infoLink", "#")
+                books.append({
+                    "title": title,
+                    "authors": authors,
+                    "description": description,
+                    "thumbnail": thumbnail,
+                    "link": link
+                })
         return books
-
-    except requests.exceptions.HTTPError as http_err:
-        st.error(f"HTTP 오류 발생: {http_err}")
-    except requests.exceptions.Timeout:
-        st.error("요청 시간이 초과되었습니다. 인터넷 연결을 확인하세요.")
-    except requests.exceptions.RequestException as err:
-        st.error(f"요청 중 오류 발생: {err}")
-    return []
 
     except requests.exceptions.RequestException as e:
         st.error(f"API 요청 중 오류 발생: {e}")
