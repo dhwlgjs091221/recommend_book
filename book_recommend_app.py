@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-API_KEY = "여기에_본인의_API_키_입력"
+API_KEY = "AIzaSyDkQPoHigCFIMANl4zhKMjvyqh_Z21qTPY"
 
 def search_books(query, max_results=10):
     url = "https://www.googleapis.com/books/v1/volumes"
