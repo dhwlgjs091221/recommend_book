@@ -13,7 +13,7 @@ if "monthly_goal" not in st.session_state:
 # 함수: 구글 북스 API로 책 검색
 def search_books(query, max_results=10):
     url = "https://www.googleapis.com/books/v1/volumes"
-    params = {"q": query, "maxResults": max_results}
+    params = {"q": query, "maxResults": max_results,"key": "AIzaSyCfw7nmYXCRbDC2BMoGvAmvSM06w5Zvqb8"}
     try:
         response = requests.get(url, params=params)
         response.raise_for_status()
