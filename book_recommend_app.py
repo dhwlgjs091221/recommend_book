@@ -1,10 +1,8 @@
 import streamlit as st
 import requests
 
-# --- 설정: 본인의 Google Books API 키 입력 ---
-API_KEY = "AIzaSyDkQPoHigCFIMANl4zhKMjvyqh_Z21qTPY"  # 예: "AIzaSyD..."
+API_KEY = "AIzaSyDkQPoHigCFIMANl4zhKMjvyqh_Z21qTPY"
 
-# --- 책 검색 함수 ---
 def search_books(query, max_results=10):
     url = "https://www.googleapis.com/books/v1/volumes"
     params = {
@@ -39,14 +37,13 @@ def search_books(query, max_results=10):
         st.error(f"API 요청 중 오류 발생: {e}")
         return []
 
-# --- Streamlit 앱 구성 ---
 st.set_page_config(page_title="도서 추천기", page_icon="📚")
 st.title("📚 분야별 도서 추천기")
 
-# 입력 필드
 query = st.text_input("관심 있는 주제를 입력하세요 (예: 역사, 수학, 철학 등)", "")
 
-# 검색 버튼
+MAX_DESC_LENGTH = 300
+
 if st.button("도서 추천 받기"):
     if not query.strip():
         st.warning("주제를 입력해주세요!")
@@ -60,7 +57,12 @@ if st.button("도서 추천 받기"):
                     st.markdown(f"**저자**: {book['authors']}")
                     if book["thumbnail"]:
                         st.image(book["thumbnail"], width=100)
-                    st.markdown(book["description"])
+                    
+                    desc = book["description"]
+                    if len(desc) > MAX_DESC_LENGTH:
+                        desc = desc[:MAX_DESC_LENGTH] + "..."
+                    
+                    st.markdown(desc)
                     st.markdown("---")
         else:
             st.info("검색 결과가 없습니다. 주제를 다시 입력해보세요.")
