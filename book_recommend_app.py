@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # --- 설정: 본인의 Google Books API 키 입력 ---
-API_KEY = "여기에_본인의_API_키_입력"  # 예: "AIzaSyD..."
+API_KEY = "AIzaSyDkQPoHigCFIMANl4zhKMjvyqh_Z21qTPY"  # 예: "AIzaSyD..."
 
 # --- 책 검색 함수 ---
 def search_books(query, max_results=10):
