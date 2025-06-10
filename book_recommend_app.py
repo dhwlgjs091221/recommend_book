@@ -17,7 +17,7 @@ def search_books(query, max_results=10, api_key=""):
         response = requests.get(url, params=params)
         response.raise_for_status()
         data = response.json()
-
+        st.write(data)
         books = []
         if "items" in data:
             for item in data["items"]:
@@ -72,4 +72,3 @@ if st.button("도서 추천 받기"):
                     st.markdown("---")
         else:
             st.info("검색 결과가 없습니다. 주제를 다시 입력해보세요.")
-st.write(data)
