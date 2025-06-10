@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import json
 
 # --- 설정: 본인의 Google Books API 키 입력 ---
 API_KEY = "AIzaSyDkQPoHigCFIMANl4zhKMjvyqh_Z21qTPY"  # 예: "AIzaSyD..."
