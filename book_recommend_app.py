@@ -10,7 +10,7 @@ def search_books(query, max_results=10):
     params = {
         "q": query,
         "maxResults": max_results,
-        "key": "AIzaSyDkQPoHigCFIMANl4zhKMjvyqh_Z21qTPY"
+        "key": API_KEY
     }
     try:
         response = requests.get(url, params=params)
