@@ -15,7 +15,7 @@ def search_books(query, max_results=10, api_key=""):
     }
     try:
         response = requests.get(url, params=params)
-        response.raise_for_status()
+        #response.raise_for_status()
         data = response.json()
         st.write(data)
         books = []
